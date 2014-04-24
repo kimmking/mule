@@ -128,6 +128,7 @@ public class CopyOnWriteCaseInsensitiveMap<K, V> implements Map<K, V>, Serializa
         if (requiresCopy)
         {
             delegate = new CaseInsensitiveHashMap(delegate);
+            requiresCopy = false;
         }
     }
 
@@ -137,6 +138,6 @@ public class CopyOnWriteCaseInsensitiveMap<K, V> implements Map<K, V>, Serializa
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
     {
         in.defaultReadObject();
-        requiresCopy = true;
+        requiresCopy = false;
     }
 }
