@@ -59,7 +59,6 @@ public class MessagePropertiesContext implements Serializable
     protected Map<String, Object> invocationMap = new UndefinedInvocationPropertiesMap();
     protected transient Map<String, Object> sessionMap = new UndefinedSessionPropertiesMap();
 
-    @SuppressWarnings("unchecked")
     public MessagePropertiesContext()
     {
         scopedMap = new TreeMap<PropertyScope, CopyOnWriteCaseInsensitiveMap<String, Object>>(new PropertyScope.ScopeComparator());
