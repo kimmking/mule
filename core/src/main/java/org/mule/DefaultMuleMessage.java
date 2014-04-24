@@ -1301,6 +1301,16 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess, Deseri
         assertAccess(WRITE);
         properties.clearProperties(scope);
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clearAttachments()
+    {
+        assertAccess(WRITE);
+        outboundAttachments.clear();
+    }
 
 
     /**
