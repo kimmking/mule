@@ -12,6 +12,7 @@ import org.mule.api.MuleSession;
 import org.mule.api.transport.PropertyScope;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.util.CaseInsensitiveHashMap;
+import org.mule.util.CopyOnWriteCaseInsensitiveHashMap;
 import org.mule.util.MapUtils;
 import org.mule.util.ObjectUtils;
 
@@ -20,12 +21,9 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.AbstractMap;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -61,18 +59,21 @@ public class MessagePropertiesContext implements Serializable
     protected Map<String, Object> invocationMap = new UndefinedInvocationPropertiesMap();
     protected transient Map<String, Object> sessionMap = new UndefinedSessionPropertiesMap();
 
-    /**
-     * The union of all property names from all scopes.
-     */
-    protected Set<String> keySet;
-
     @SuppressWarnings("unchecked")
     public MessagePropertiesContext()
     {
-        keySet = new TreeSet<String>();
         scopedMap = new TreeMap<PropertyScope, Map<String, Object>>(new PropertyScope.ScopeComparator());
         scopedMap.put(PropertyScope.INBOUND, new CaseInsensitiveHashMap/* <String, Object> */(6));
         scopedMap.put(PropertyScope.OUTBOUND, new CaseInsensitiveHashMap/* <String, Object> */(6));
+    }
+
+    public MessagePropertiesContext(MessagePropertiesContext previous)
+    {
+        scopedMap = new TreeMap<PropertyScope, Map<String, Object>>(new PropertyScope.ScopeComparator());
+        scopedMap.put(PropertyScope.INBOUND, new CopyOnWriteCaseInsensitiveHashMap<String, Object>(
+            previous.scopedMap.get(PropertyScope.INBOUND)));
+        scopedMap.put(PropertyScope.OUTBOUND, new CopyOnWriteCaseInsensitiveHashMap<String, Object>(
+            previous.scopedMap.get(PropertyScope.OUTBOUND)));
     }
 
     protected Map<String, Object> getScopedProperties(PropertyScope scope)
@@ -106,7 +107,6 @@ public class MessagePropertiesContext implements Serializable
         if (properties != null)
         {
             getScopedProperties(PropertyScope.INBOUND).putAll(properties);
-            keySet.addAll(properties.keySet());
         }
     }
 
@@ -138,10 +138,8 @@ public class MessagePropertiesContext implements Serializable
     public void clearProperties()
     {
         Map<String, Object> props = getScopedProperties(PropertyScope.INVOCATION);
-        keySet.removeAll(props.keySet());
         props.clear();
         props = getScopedProperties(PropertyScope.OUTBOUND);
-        keySet.removeAll(props.keySet());
         props.clear();
     }
 
@@ -154,7 +152,6 @@ public class MessagePropertiesContext implements Serializable
         }
 
         Map<String, Object> props = getScopedProperties(scope);
-        keySet.removeAll(props.keySet());
         props.clear();
     }
 
@@ -169,8 +166,6 @@ public class MessagePropertiesContext implements Serializable
     {
         Object value = getScopedProperties(PropertyScope.OUTBOUND).remove(key);
         Object inv = getScopedProperties(PropertyScope.INVOCATION).remove(key);
-
-        keySet.remove(key);
 
         if (value == null)
         {
@@ -195,14 +190,6 @@ public class MessagePropertiesContext implements Serializable
 
         Object value = getScopedProperties(scope).remove(key);
 
-        // Only remove the property from the keySet if it does not exist in any other scope besides this one.
-        if (getProperty(key, PropertyScope.OUTBOUND) == null
-            && getProperty(key, PropertyScope.INVOCATION) == null
-            && getProperty(key, PropertyScope.INBOUND) == null)
-        {
-            keySet.remove(key);
-        }
-
         return value;
     }
 
@@ -217,7 +204,6 @@ public class MessagePropertiesContext implements Serializable
     public void setProperty(String key, Object value)
     {
         getScopedProperties(DEFAULT_SCOPE).put(key, value);
-        keySet.add(key);
     }
 
     /**
@@ -236,18 +222,6 @@ public class MessagePropertiesContext implements Serializable
         }
 
         getScopedProperties(scope).put(key, value);
-        keySet.add(key);
-    }
-
-    /**
-     * @deprecated use {@link #getPropertyNames(org.mule.api.transport.PropertyScope)}
-     */
-    @Deprecated
-    public Set<String> getPropertyNames()
-    {
-        Set<String> allProps = new HashSet<String>();
-        allProps.addAll(keySet);
-        return allProps;
     }
 
     /**

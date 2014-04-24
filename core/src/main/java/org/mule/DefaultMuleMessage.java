@@ -101,12 +101,12 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess, Deseri
     /**
      * Collection of attachments that were attached to the incoming message
      */
-    private transient Map<String, DataHandler> inboundAttachments = new ConcurrentHashMap<String, DataHandler>();
+    private transient Map<String, DataHandler> inboundAttachments = new HashMap<String, DataHandler>();
 
     /**
      * Collection of attachments that will be sent out with this message
      */
-    private transient Map<String, DataHandler> outboundAttachments = new ConcurrentHashMap<String, DataHandler>();
+    private transient Map<String, DataHandler> outboundAttachments = new HashMap<String, DataHandler>();
 
     private transient byte[] cache;
     protected transient MuleContext muleContext;
@@ -224,23 +224,30 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess, Deseri
 
     protected void copyMessageProperties(MuleMessage muleMessage)
     {
-        for (PropertyScope scope : new PropertyScope[]{PropertyScope.INBOUND,
-            PropertyScope.OUTBOUND})
+        if (muleMessage instanceof DefaultMuleMessage)
         {
-            try
+            properties = new MessagePropertiesContext(((DefaultMuleMessage) muleMessage).properties);
+        }
+        else
+        {
+
+            for (PropertyScope scope : new PropertyScope[]{PropertyScope.INBOUND, PropertyScope.OUTBOUND})
             {
-                for (String name : muleMessage.getPropertyNames(scope))
+                try
                 {
-                    Object value = muleMessage.getProperty(name, scope);
-                    if (value != null)
+                    for (String name : muleMessage.getPropertyNames(scope))
                     {
-                        setProperty(name, value, scope);
+                        Object value = muleMessage.getProperty(name, scope);
+                        if (value != null)
+                        {
+                            setProperty(name, value, scope);
+                        }
                     }
                 }
-            }
-            catch (IllegalArgumentException iae)
-            {
-                // ignore non-registered property scope
+                catch (IllegalArgumentException iae)
+                {
+                    // ignore non-registered property scope
+                }
             }
         }
     }
@@ -635,7 +642,7 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess, Deseri
         //TODO logger.warn("MuleMessage.getPropertyNames() method is deprecated, use MuleMessage.getOutboundPropertyNames() instead.  This method will be removed in the next point release");
         //return getOutboundPropertyNames();
         assertAccess(READ);
-        return properties.getPropertyNames();
+        return properties.getPropertyNames(PropertyScope.OUTBOUND);
     }
 
     /**
