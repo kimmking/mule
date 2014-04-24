@@ -55,7 +55,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -1817,12 +1816,12 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess, Deseri
         this.muleContext = context;
         if (this.inboundAttachments == null)
         {
-            this.inboundAttachments = new ConcurrentHashMap<String, DataHandler>();
+            this.inboundAttachments = new HashMap<String, DataHandler>();
         }
 
         if (this.outboundAttachments == null)
         {
-            this.outboundAttachments = new ConcurrentHashMap<String, DataHandler>();
+            this.outboundAttachments = new HashMap<String, DataHandler>();
         }
     }
 
