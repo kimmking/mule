@@ -120,7 +120,7 @@ public class MuleMessgeCopyPerformanceTestCase extends AbstractMuleTestCase
     }
 
     @Test
-    @PerfTest(duration = 1500000, threads = 1, warmUp = 5000)
+    @PerfTest(duration = 15000, threads = 1, warmUp = 5000)
     public void copyWith100PopertiesWrite50Outbound()
     {
         MuleMessage original = createMuleMessageWithProperties(50);
