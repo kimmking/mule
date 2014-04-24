@@ -35,7 +35,6 @@ public class CaseInsensitiveHashMapTestCase extends AbstractMuleTestCase
     {
         Map map = createTestMap();
         doTestMap(map);
-        assertEquals(2, map.size());
     }
 
     @Test
@@ -47,7 +46,6 @@ public class CaseInsensitiveHashMapTestCase extends AbstractMuleTestCase
         byte[] bytes = SerializationUtils.serialize((Serializable) map);
         Map resultMap = (Map) SerializationUtils.deserialize(bytes);
         doTestMap(resultMap);
-        assertEquals(2, map.size());
     }
 
     public void doTestMap(Map map) throws Exception
@@ -59,6 +57,8 @@ public class CaseInsensitiveHashMapTestCase extends AbstractMuleTestCase
         assertEquals(Integer.valueOf(3), map.get("DOO"));
         assertEquals(Integer.valueOf(3), map.get("doo"));
         assertEquals(Integer.valueOf(3), map.get("Doo"));
+
+        assertEquals(2, map.size());
 
         // Test that the key set contains the same case as we put in
         for (Object o : map.keySet())

@@ -12,7 +12,7 @@ import org.mule.api.MuleSession;
 import org.mule.api.transport.PropertyScope;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.util.CaseInsensitiveHashMap;
-import org.mule.util.CopyOnWriteCaseInsensitiveHashMap;
+import org.mule.util.CopyOnWriteCaseInsensitiveMap;
 import org.mule.util.MapUtils;
 import org.mule.util.ObjectUtils;
 
@@ -54,7 +54,7 @@ public class MessagePropertiesContext implements Serializable
     /**
      * Map of maps containing the scoped properties, each scope has its own Map.
      */
-    protected Map<PropertyScope, Map<String, Object>> scopedMap;
+    protected Map<PropertyScope, CopyOnWriteCaseInsensitiveMap<String, Object>> scopedMap;
 
     protected Map<String, Object> invocationMap = new UndefinedInvocationPropertiesMap();
     protected transient Map<String, Object> sessionMap = new UndefinedSessionPropertiesMap();
@@ -62,17 +62,17 @@ public class MessagePropertiesContext implements Serializable
     @SuppressWarnings("unchecked")
     public MessagePropertiesContext()
     {
-        scopedMap = new TreeMap<PropertyScope, Map<String, Object>>(new PropertyScope.ScopeComparator());
-        scopedMap.put(PropertyScope.INBOUND, new CaseInsensitiveHashMap/* <String, Object> */(6));
-        scopedMap.put(PropertyScope.OUTBOUND, new CaseInsensitiveHashMap/* <String, Object> */(6));
+        scopedMap = new TreeMap<PropertyScope, CopyOnWriteCaseInsensitiveMap<String, Object>>(new PropertyScope.ScopeComparator());
+        scopedMap.put(PropertyScope.INBOUND, new CopyOnWriteCaseInsensitiveMap<String, Object>());
+        scopedMap.put(PropertyScope.OUTBOUND, new CopyOnWriteCaseInsensitiveMap<String, Object>());
     }
 
     public MessagePropertiesContext(MessagePropertiesContext previous)
     {
-        scopedMap = new TreeMap<PropertyScope, Map<String, Object>>(new PropertyScope.ScopeComparator());
-        scopedMap.put(PropertyScope.INBOUND, new CopyOnWriteCaseInsensitiveHashMap<String, Object>(
+        scopedMap = new TreeMap<PropertyScope, CopyOnWriteCaseInsensitiveMap<String, Object>>(new PropertyScope.ScopeComparator());
+        scopedMap.put(PropertyScope.INBOUND, new CopyOnWriteCaseInsensitiveMap<String, Object>(
             previous.scopedMap.get(PropertyScope.INBOUND)));
-        scopedMap.put(PropertyScope.OUTBOUND, new CopyOnWriteCaseInsensitiveHashMap<String, Object>(
+        scopedMap.put(PropertyScope.OUTBOUND, new CopyOnWriteCaseInsensitiveMap<String, Object>(
             previous.scopedMap.get(PropertyScope.OUTBOUND)));
     }
 
@@ -301,7 +301,7 @@ public class MessagePropertiesContext implements Serializable
     {
         StringBuilder buf = new StringBuilder(128);
         buf.append("Properties{");
-        for (Map.Entry<PropertyScope, Map<String, Object>> entry : scopedMap.entrySet())
+        for (Map.Entry<PropertyScope, CopyOnWriteCaseInsensitiveMap<String, Object>> entry : scopedMap.entrySet())
         {
             buf.append(entry.getKey()).append(":");
             buf.append(MapUtils.toString(entry.getValue(), false));
