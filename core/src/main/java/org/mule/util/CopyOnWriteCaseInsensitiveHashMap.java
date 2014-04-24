@@ -6,6 +6,8 @@
  */
 package org.mule.util;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
@@ -17,10 +19,13 @@ import java.util.concurrent.locks.ReentrantLock;
 public class CopyOnWriteCaseInsensitiveHashMap<K, V> implements Map<K, V>, Serializable
 {
 
-    private transient Map<K, V> copy;
+    private static final long serialVersionUID = 4829196240419943077L;
+
     private final Map<K, V> original;
+
     private final ReentrantLock copyLock = new ReentrantLock();
-    private final AtomicBoolean copied = new AtomicBoolean(false);
+    private transient AtomicBoolean copied = new AtomicBoolean(false);
+    private transient Map<K, V> copy;
 
     public CopyOnWriteCaseInsensitiveHashMap(Map<K, V> original)
     {
@@ -140,5 +145,15 @@ public class CopyOnWriteCaseInsensitiveHashMap<K, V> implements Map<K, V>, Seria
                 copyLock.unlock();
             }
         }
+    }
+
+    /**
+     * After deserialization we can just use unserialized original map directly.
+     */
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+        in.defaultReadObject();
+        copy = original;
+        copied = new AtomicBoolean(true);
     }
 }
