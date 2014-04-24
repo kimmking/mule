@@ -23,7 +23,6 @@ import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,28 +50,22 @@ public class MessagePropertiesContext implements Serializable
 
     private static Log logger = LogFactory.getLog(MessagePropertiesContext.class);
 
-    /**
-     * Map of maps containing the scoped properties, each scope has its own Map.
-     */
-    protected Map<PropertyScope, CopyOnWriteCaseInsensitiveMap<String, Object>> scopedMap;
+    protected CopyOnWriteCaseInsensitiveMap<String, Object> inboundMap;
+    protected CopyOnWriteCaseInsensitiveMap<String, Object> outboundMap;
 
     protected Map<String, Object> invocationMap = new UndefinedInvocationPropertiesMap();
     protected transient Map<String, Object> sessionMap = new UndefinedSessionPropertiesMap();
 
     public MessagePropertiesContext()
     {
-        scopedMap = new TreeMap<PropertyScope, CopyOnWriteCaseInsensitiveMap<String, Object>>(new PropertyScope.ScopeComparator());
-        scopedMap.put(PropertyScope.INBOUND, new CopyOnWriteCaseInsensitiveMap<String, Object>());
-        scopedMap.put(PropertyScope.OUTBOUND, new CopyOnWriteCaseInsensitiveMap<String, Object>());
+        inboundMap = new CopyOnWriteCaseInsensitiveMap<String, Object>();
+        outboundMap = new CopyOnWriteCaseInsensitiveMap<String, Object>();
     }
 
     public MessagePropertiesContext(MessagePropertiesContext previous)
     {
-        scopedMap = new TreeMap<PropertyScope, CopyOnWriteCaseInsensitiveMap<String, Object>>(new PropertyScope.ScopeComparator());
-        scopedMap.put(PropertyScope.INBOUND, new CopyOnWriteCaseInsensitiveMap<String, Object>(
-            previous.scopedMap.get(PropertyScope.INBOUND)));
-        scopedMap.put(PropertyScope.OUTBOUND, new CopyOnWriteCaseInsensitiveMap<String, Object>(
-            previous.scopedMap.get(PropertyScope.OUTBOUND)));
+        inboundMap = new CopyOnWriteCaseInsensitiveMap<String, Object>(previous.inboundMap);
+        outboundMap = new CopyOnWriteCaseInsensitiveMap<String, Object>(previous.outboundMap);
     }
 
     protected Map<String, Object> getScopedProperties(PropertyScope scope)
@@ -85,14 +78,17 @@ public class MessagePropertiesContext implements Serializable
         {
             return invocationMap;
         }
+        else if (PropertyScope.INBOUND.equals(scope))
+        {
+            return inboundMap;
+        }
+        else if (PropertyScope.OUTBOUND.equals(scope))
+        {
+            return outboundMap;
+        }
         else
         {
-            Map<String, Object> map = scopedMap.get(scope);
-            if (map == null)
-            {
-                throw new IllegalArgumentException("Scope not registered: " + scope);
-            }
-            return map;
+            throw new IllegalArgumentException("Scope not registered: " + scope);
         }
     }
 
@@ -300,12 +296,11 @@ public class MessagePropertiesContext implements Serializable
     {
         StringBuilder buf = new StringBuilder(128);
         buf.append("Properties{");
-        for (Map.Entry<PropertyScope, CopyOnWriteCaseInsensitiveMap<String, Object>> entry : scopedMap.entrySet())
-        {
-            buf.append(entry.getKey()).append(":");
-            buf.append(MapUtils.toString(entry.getValue(), false));
-            buf.append(", ");
-        }
+        buf.append(PropertyScope.INBOUND_NAME).append(":");
+        buf.append(MapUtils.toString(inboundMap, false));
+        buf.append(", ");
+        buf.append(PropertyScope.OUTBOUND_NAME).append(":");
+        buf.append(MapUtils.toString(inboundMap, false));
         buf.append("}");
         return buf.toString();
     }
@@ -315,19 +310,28 @@ public class MessagePropertiesContext implements Serializable
      */
     private void writeObject(java.io.ObjectOutputStream out) throws IOException
     {
-        for (PropertyScope scope : new PropertyScope[]{PropertyScope.INBOUND, PropertyScope.OUTBOUND})
+        for (Map.Entry<String, Object> entry : inboundMap.entrySet())
         {
-            for (Map.Entry<String, Object> entry : scopedMap.get(scope).entrySet())
+            Object value = entry.getValue();
+            if (value != null && !(value instanceof Serializable))
             {
-                Object value = entry.getValue();
-                if (value != null && !(value instanceof Serializable))
-                {
-                    String message = String.format(
-                        "Unable to serialize the %s message property %s, which is of type %s ", scope,
-                        entry.getKey(), value);
-                    logger.error(message);
-                    throw new IOException(message);
-                }
+                String message = String.format(
+                    "Unable to serialize the %s message property %s, which is of type %s ",
+                    PropertyScope.INBOUND, entry.getKey(), value);
+                logger.error(message);
+                throw new IOException(message);
+            }
+        }
+        for (Map.Entry<String, Object> entry : outboundMap.entrySet())
+        {
+            Object value = entry.getValue();
+            if (value != null && !(value instanceof Serializable))
+            {
+                String message = String.format(
+                    "Unable to serialize the %s message property %s, which is of type %s ",
+                    PropertyScope.OUTBOUND, entry.getKey(), value);
+                logger.error(message);
+                throw new IOException(message);
             }
         }
         if (invocationMap instanceof UndefinedInvocationPropertiesMap)
