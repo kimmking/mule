@@ -190,7 +190,6 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess, Deseri
         id = previous.getUniqueId();
         rootId = previous.getMessageRootId();
         setMuleContext(muleContext);
-        setEncoding(previous.getEncoding());
 
         if (message instanceof MuleMessage)
         {
@@ -203,7 +202,9 @@ public class DefaultMuleMessage implements MuleMessage, ThreadSafeAccess, Deseri
             setPayload(message);
             copyMessageProperties(previous);
         }
+
         originalPayload = previous.getPayload();
+        setEncoding(previous.getEncoding());
 
         if (previous.getExceptionPayload() != null)
         {
