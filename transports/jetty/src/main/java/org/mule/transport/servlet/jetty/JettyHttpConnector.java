@@ -17,7 +17,6 @@ import org.mule.api.endpoint.InboundEndpoint;
 import org.mule.api.lifecycle.InitialisationException;
 import org.mule.api.lifecycle.LifecycleException;
 import org.mule.api.transport.MessageReceiver;
-import org.mule.api.transport.ReplyToHandler;
 import org.mule.config.i18n.CoreMessages;
 import org.mule.context.notification.MuleContextNotification;
 import org.mule.context.notification.NotificationException;
@@ -43,17 +42,16 @@ import javax.servlet.Servlet;
 import javax.servlet.http.HttpServlet;
 
 import org.eclipse.jetty.deploy.App;
-import org.eclipse.jetty.deploy.AppLifeCycle;
 import org.eclipse.jetty.deploy.DeploymentManager;
-import org.eclipse.jetty.deploy.graph.Node;
 import org.eclipse.jetty.deploy.providers.WebAppProvider;
+import org.eclipse.jetty.server.AbstractNetworkConnector;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.log.Log;
@@ -84,6 +82,8 @@ public class JettyHttpConnector extends AbstractConnector
     private boolean useContinuations = false;
 
     private int acceptors = 1;
+
+    private int selectors = -1;
 
     private String resourceBase;
 
@@ -126,6 +126,10 @@ public class JettyHttpConnector extends AbstractConnector
 
         if (webappsConfiguration != null)
         {
+            final AbstractNetworkConnector jettyConnector = createJettyConnector();
+
+            configureConnector(jettyConnector, webappsConfiguration.getHost(), webappsConfiguration.getPort());
+
             DeploymentManager deploymentManager = new DeploymentManager();
             WebAppProvider webAppProvider = new WebAppProvider()
             {
@@ -141,52 +145,32 @@ public class JettyHttpConnector extends AbstractConnector
                     {
                         webAppContext.setSystemClasses(webappsConfiguration.getSystemClasses());
                     }
+
+
+                    File workDir = new File(muleContext.getConfiguration().getWorkingDirectory(),
+                                            "_exploded_wars" + webAppContext.getContextPath());
+                    workDir.mkdirs();
+                    webAppContext.setTempDirectory(workDir);
+                    webAppContext.setAttribute(MULE_CONTEXT_ATTRIBUTE, muleContext);
+                    webAppContext.setVirtualHosts(new String[] {getVirtualHostName(jettyConnector)});
+
+                    if (logger.isInfoEnabled())
+                    {
+                        String msg = String.format("Will deploy a web app at %s://%s%s%s",
+                                                   "http", jettyConnector.getHost(),
+                                                   jettyConnector.getPort() == 80 ? StringUtils.EMPTY : ":" + jettyConnector.getPort(),
+                                                   webAppContext.getContextPath());
+
+                        logger.info(StringMessageUtils.getBoilerPlate(msg, '*', 70));
+                    }
+
                     return webAppContext;
                 }
             };
 
-            final Connector jettyConnector = createJettyConnector();
-            jettyConnector.setHost(webappsConfiguration.getHost());
-            jettyConnector.setPort(webappsConfiguration.getPort());
-
             deploymentManager.setContexts(contexts);
             deploymentManager.addAppProvider(webAppProvider);
-            deploymentManager.addLifeCycleBinding(new AppLifeCycle.Binding()
-            {
-                @Override
-                public String[] getBindingTargets()
-                {
-                    return new String[] {AppLifeCycle.DEPLOYING};
-                }
 
-                @Override
-                public void processBinding(Node node, App app) throws Exception
-                {
-                    ContextHandler contextHandler = app.getContextHandler();
-
-                    if (contextHandler instanceof WebAppContext)
-                    {
-                        WebAppContext webapp = (WebAppContext) contextHandler;
-                        File workDir = new File(muleContext.getConfiguration().getWorkingDirectory(),
-                                                "_exploded_wars" + webapp.getContextPath());
-                        workDir.mkdirs();
-                        webapp.setTempDirectory(workDir);
-                        webapp.setAttribute(MULE_CONTEXT_ATTRIBUTE, muleContext);
-                        webapp.setConnectorNames(new String[] {jettyConnector.getName()});
-
-                        if (logger.isInfoEnabled())
-                        {
-                            String msg = String.format("Will deploy a web app at %s://%s%s%s",
-                                                       "http", jettyConnector.getHost(),
-                                                       jettyConnector.getPort() == 80 ? StringUtils.EMPTY : ":" + jettyConnector.getPort(),
-                                                       webapp.getContextPath());
-
-                            logger.info(StringMessageUtils.getBoilerPlate(msg, '*', 70));
-                        }
-                        return;
-                    }
-                }
-            });
             String webAppDir = webappsConfiguration.getDirectory();
             if (StringUtils.isBlank(webAppDir))
             {
@@ -371,14 +355,9 @@ public class JettyHttpConnector extends AbstractConnector
         return receiver;
     }
 
-    protected org.eclipse.jetty.server.AbstractConnector createJettyConnector()
+    protected AbstractNetworkConnector createJettyConnector() throws InitialisationException
     {
-        final SelectChannelConnector cnn = new SelectChannelConnector();
-
-        // get and set number of acceptor threads into the underlying connector
-        cnn.setAcceptors(getAcceptors());
-
-        return cnn;
+        return new ServerConnector(getHttpServer(), getAcceptors(), getSelectors());
     }
 
     public void unregisterListener(MessageReceiver receiver) throws MuleException
@@ -425,16 +404,6 @@ public class JettyHttpConnector extends AbstractConnector
         this.receiverServlet = receiverServlet;
     }
 
-    @Override
-    public ReplyToHandler getReplyToHandler(ImmutableEndpoint endpoint)
-    {
-        if (isUseContinuations())
-        {
-            return new JettyContinuationsReplyToHandler(muleContext);
-        }
-        return super.getReplyToHandler(endpoint);
-    }
-
     public boolean isUseContinuations()
     {
         return useContinuations;
@@ -465,6 +434,26 @@ public class JettyHttpConnector extends AbstractConnector
         this.acceptors = acceptors;
     }
 
+    /**
+     * Get the number of "selector" threads Jetty should use. If -1, a default value is used based on the number of processors.
+     * @see org.eclipse.jetty.server.ServerConnector#ServerConnector(org.eclipse.jetty.server.Server, int, int)
+     */
+    public int getSelectors()
+    {
+        return selectors;
+    }
+
+    /**
+     * Set the number of "selector" threads Jetty should use. If -1, a default value is used based on the number of processors.
+     * @see org.eclipse.jetty.server.ServerConnector#ServerConnector(org.eclipse.jetty.server.Server, int, int)
+     *
+     * TODO MULE-7689: Allow to configure the number of selector threads through XML.
+     */
+    public void setSelectors(int selectors)
+    {
+        this.selectors = selectors;
+    }
+
     ConnectorHolder<? extends MuleReceiverServlet, ? extends JettyHttpMessageReceiver> registerJettyEndpoint(MessageReceiver receiver, InboundEndpoint endpoint) throws MuleException
     {
         // Make sure that there is a connector for the requested endpoint.
@@ -477,17 +466,20 @@ public class JettyHttpConnector extends AbstractConnector
             holder = holders.get(connectorKey);
             if (holder == null)
             {
-                Connector connector = createJettyConnector();
+                AbstractNetworkConnector connector = createJettyConnector();
 
-                connector.setPort(endpoint.getEndpointURI().getPort());
                 String host = endpoint.getEndpointURI().getHost();
+                int port = endpoint.getEndpointURI().getPort();
+
                 if ("localhost".equalsIgnoreCase(host) && TcpPropertyHelper.isBindingLocalhostToAllLocalInterfaces())
                 {
                     // bindingLocalhostToAllLocalInterfaces property is set, so we must bind localhost to all local interfaces.
                     logger.warn(TcpMessages.localhostBoundToAllLocalInterfaces());
                     host = "0.0.0.0";
                 }
-                connector.setHost(host);
+
+                configureConnector(connector, host, port);
+
                 getHttpServer().addConnector(connector);
 
                 holder = createContextHolder(connector, receiver.getEndpoint(), receiver);
@@ -507,21 +499,21 @@ public class JettyHttpConnector extends AbstractConnector
 
     protected ConnectorHolder createContextHolder(Connector connector, InboundEndpoint endpoint, MessageReceiver receiver)
     {
-        return new MuleReceiverConnectorHolder(connector, (JettyReceiverServlet) createServlet(connector, endpoint), (JettyHttpMessageReceiver)receiver);
+        return new MuleReceiverConnectorHolder(connector, (JettyReceiverServlet) createServlet((AbstractNetworkConnector)connector, endpoint), (JettyHttpMessageReceiver)receiver);
     }
 
-    protected Servlet createServlet(Connector connector, ImmutableEndpoint endpoint)
+    protected Servlet createServlet(AbstractNetworkConnector connector, ImmutableEndpoint endpoint)
     {
         HttpServlet servlet;
         if (getReceiverServlet() == null)
         {
             if(isUseContinuations())
             {
-                servlet = new JettyContinuationsReceiverServlet();
+                servlet = new JettyContinuationsReceiverServlet(muleContext);
             }
             else
             {
-                servlet = new JettyReceiverServlet();
+                servlet = new JettyReceiverServlet(muleContext);
             }
         }
         else
@@ -545,7 +537,7 @@ public class JettyHttpConnector extends AbstractConnector
 
         ServletContextHandler servletContext = new ServletContextHandler(contexts, ROOT, ServletContextHandler.NO_SECURITY);
         servletContext.addEventListener(new MuleServletContextListener(muleContext, getName()));
-        servletContext.setConnectorNames(new String[] {connector.getName()});
+        servletContext.setVirtualHosts(new String[] {getVirtualHostName(connector)});
 
         ServletHolder holder = new ServletHolder();
         holder.setServlet(servlet);
@@ -559,6 +551,21 @@ public class JettyHttpConnector extends AbstractConnector
     protected String getHolderKey(ImmutableEndpoint endpoint)
     {
         return endpoint.getProtocol() + ":" + endpoint.getEndpointURI().getHost() + ":" + endpoint.getEndpointURI().getPort();
+    }
+
+    protected void configureConnector(AbstractNetworkConnector connector, String host, int port)
+    {
+        connector.setHost(host);
+        connector.setPort(port);
+        connector.setName(String.format("%s:%d", host, port));
+    }
+
+    /**
+     * Returns the virtual host name required to map contexts to a specific connector.
+     */
+    protected String getVirtualHostName(AbstractNetworkConnector connector)
+    {
+        return "@" + connector.getName();
     }
 
     public class MuleReceiverConnectorHolder extends AbstractConnectorHolder<JettyReceiverServlet, JettyHttpMessageReceiver>

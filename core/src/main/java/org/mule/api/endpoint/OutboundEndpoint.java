@@ -6,17 +6,23 @@
  */
 package org.mule.api.endpoint;
 
+import org.mule.api.exception.MessagingExceptionHandlerAware;
 import org.mule.api.processor.MessageProcessor;
 
 import java.util.List;
 
-public interface OutboundEndpoint extends ImmutableEndpoint, MessageProcessor
+public interface OutboundEndpoint extends ImmutableEndpoint, MessageProcessor, MessagingExceptionHandlerAware
 {    
     /**
      * @return a list of properties which should be carried over from the request message to the response message
      * in the case of a synchronous call.
      */
     List<String> getResponseProperties();
+
+    /**
+     * @return true if the destination is compute in every request, false if the destination is always the same.
+     */
+    boolean isDynamic();
 }
 
 

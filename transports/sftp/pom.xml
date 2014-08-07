@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.mule.transports</groupId>
         <artifactId>mule-transports</artifactId>
-        <version>3.5.0-M5-SNAPSHOT</version>
+        <version>3.6.0-M2-SNAPSHOT</version>
     </parent>
     <artifactId>mule-transport-sftp</artifactId>
     <packaging>jar</packaging>
@@ -98,14 +98,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <name>jsch</name>
-            <url>http://jsch.sourceforge.net/maven2/</url>
-            <id>jsch</id>
-        </repository>
-    </repositories>
 
     <profiles>
         <!-- A profile that can be used to run all tests with pooling enabled -->

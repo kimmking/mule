@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.mule.patterns</groupId>
         <artifactId>mule-patterns</artifactId>
-        <version>3.5.0-M5-SNAPSHOT</version>
+        <version>3.6.0-M2-SNAPSHOT</version>
     </parent>
     <artifactId>mule-pattern-core</artifactId>
     <packaging>jar</packaging>
@@ -46,11 +46,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.mule</groupId>
-            <artifactId>mule-core</artifactId>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-tests-functional</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
-            <type>test-jar</type>
         </dependency>
         <dependency>
             <groupId>dom4j</groupId>

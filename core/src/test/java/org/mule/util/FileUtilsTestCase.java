@@ -6,6 +6,10 @@
  */
 package org.mule.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.mule.tck.junit4.AbstractMuleTestCase;
 
 import java.io.File;
@@ -15,11 +19,6 @@ import java.net.URL;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class FileUtilsTestCase extends AbstractMuleTestCase
 {
@@ -57,7 +56,7 @@ public class FileUtilsTestCase extends AbstractMuleTestCase
 
             file = FileUtils.stringToFile(TEST_FILE, " and this is appended content", true);
 
-            String content = FileUtils.readFileToString(FileUtils.newFile(TEST_FILE), null);
+            String content = FileUtils.readFileToString(FileUtils.newFile(TEST_FILE), (String) null);
 
             assertNotNull(content);
             assertTrue(content.indexOf("this is a test file") > -1);

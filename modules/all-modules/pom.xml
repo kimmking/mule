@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.mule.modules</groupId>
         <artifactId>mule-modules</artifactId>
-        <version>3.5.0-M5-SNAPSHOT</version>
+        <version>3.6.0-M2-SNAPSHOT</version>
     </parent>
     <artifactId>mule-modules-all</artifactId>
     <packaging>pom</packaging>
@@ -52,6 +52,11 @@
         <dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-module-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-db</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

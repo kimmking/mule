@@ -7,27 +7,17 @@
 
 package org.mule.module.db.integration.config;
 
-import static org.mule.module.db.integration.TestRecordUtil.assertMessageContains;
-import static org.mule.module.db.integration.TestRecordUtil.getAllPlanetRecords;
-import org.mule.api.MuleMessage;
-import org.mule.api.client.LocalMuleClient;
-import org.mule.module.db.integration.AbstractDbIntegrationTestCase;
 import org.mule.module.db.integration.TestDbConfig;
 import org.mule.module.db.integration.model.AbstractTestDatabase;
-import org.mule.tck.junit4.rule.SystemProperty;
+import org.mule.module.db.integration.model.MySqlTestDatabase;
 
+import java.util.Collections;
 import java.util.List;
 
-import org.junit.Rule;
-import org.junit.Test;
 import org.junit.runners.Parameterized;
 
-public class MySqlHostPortConfigTestCase extends AbstractDbIntegrationTestCase
+public class MySqlHostPortConfigTestCase extends AbstractHostPortConfigTestCase
 {
-
-    @Rule
-    public SystemProperty mysqlPort = new SystemProperty("mysql.port", "3306");
-
     public MySqlHostPortConfigTestCase(String dataSourceConfigResource, AbstractTestDatabase testDatabase)
     {
         super(dataSourceConfigResource, testDatabase);
@@ -36,22 +26,19 @@ public class MySqlHostPortConfigTestCase extends AbstractDbIntegrationTestCase
     @Parameterized.Parameters
     public static List<Object[]> parameters()
     {
-        return TestDbConfig.getMySqlResource();
+        if (TestDbConfig.getMySqlResource().isEmpty())
+        {
+            return Collections.emptyList();
+        }
+        else
+        {
+            return Collections.singletonList(new Object[] {"integration/config/mysql-host-port-db-config.xml", new MySqlTestDatabase()});
+        }
     }
 
     @Override
-    protected String[] getFlowConfigurationResources()
+    protected String getDatabasePortPropertyValue()
     {
-        return new String[] {"integration/config/mysql-host-port-db-config.xml"};
-    }
-
-    @Test
-    public void usesDatasourceConfig() throws Exception
-    {
-        LocalMuleClient client = muleContext.getClient();
-
-        MuleMessage response = client.send("vm://usesHostPortConfig", TEST_MESSAGE, null);
-
-        assertMessageContains(response, getAllPlanetRecords());
+        return "3306";
     }
 }

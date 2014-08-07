@@ -36,7 +36,7 @@
 #
 # /conf
 #
-/mule-standalone-${productVersion}/conf/log4j.properties
+/mule-standalone-${productVersion}/conf/log4j2.xml
 /mule-standalone-${productVersion}/conf/wrapper.conf
 /mule-standalone-${productVersion}/conf/tls-default.conf
 /mule-standalone-${productVersion}/conf/tls-fips140-2.conf
@@ -104,7 +104,7 @@
 /mule-standalone-${productVersion}/examples/bookstore/src/main/resources
 /mule-standalone-${productVersion}/examples/bookstore/src/main/resources/bookstore-config.xml
 /mule-standalone-${productVersion}/examples/bookstore/src/main/resources/email.properties
-/mule-standalone-${productVersion}/examples/bookstore/src/main/resources/log4j.properties
+/mule-standalone-${productVersion}/examples/bookstore/src/main/resources/log4j2.xml
 /mule-standalone-${productVersion}/examples/bookstore/src/main/resources/messages
 /mule-standalone-${productVersion}/examples/bookstore/src/main/resources/messages/bookstore-admin-messages.properties
 /mule-standalone-${productVersion}/examples/bookstore/src/test
@@ -115,7 +115,7 @@
 /mule-standalone-${productVersion}/examples/bookstore/src/test/java/org/mule/example/bookstore
 /mule-standalone-${productVersion}/examples/bookstore/src/test/java/org/mule/example/bookstore/BookstoreTestCase.java
 /mule-standalone-${productVersion}/examples/bookstore/src/test/resources
-/mule-standalone-${productVersion}/examples/bookstore/src/test/resources/log4j.properties
+/mule-standalone-${productVersion}/examples/bookstore/src/test/resources/log4j2-test.xml
 
 
 
@@ -144,7 +144,7 @@
 /mule-standalone-${productVersion}/examples/echo/src/test/java/org/mule/example/echo
 /mule-standalone-${productVersion}/examples/echo/src/test/java/org/mule/example/echo/EchoTestCase.java
 /mule-standalone-${productVersion}/examples/echo/src/test/resources
-/mule-standalone-${productVersion}/examples/echo/src/test/resources/log4j.properties
+/mule-standalone-${productVersion}/examples/echo/src/test/resources/log4j2-test.xml
 /mule-standalone-${productVersion}/examples/echo/src/test/resources/mule-test-exclusions.txt
 
 
@@ -169,7 +169,7 @@
 /mule-standalone-${productVersion}/examples/gpswalker/src/main/java/org/mule/example/gpswalker/CityStroller.java
 /mule-standalone-${productVersion}/examples/gpswalker/src/main/java/org/mule/example/gpswalker/GpsCoord.java
 /mule-standalone-${productVersion}/examples/gpswalker/src/main/resources
-/mule-standalone-${productVersion}/examples/gpswalker/src/main/resources/log4j.properties
+/mule-standalone-${productVersion}/examples/gpswalker/src/main/resources/log4j2.xml
 
 
 
@@ -219,7 +219,7 @@
 /mule-standalone-${productVersion}/examples/hello/src/test/java/org/mule/example/hello/HelloSampleTestCase.java
 /mule-standalone-${productVersion}/examples/hello/src/test/java/org/mule/example/hello/HelloTestCase.java
 /mule-standalone-${productVersion}/examples/hello/src/test/resources
-/mule-standalone-${productVersion}/examples/hello/src/test/resources/log4j.properties
+/mule-standalone-${productVersion}/examples/hello/src/test/resources/log4j2-test.xml
 
 #
 # /examples/flight-reservation
@@ -292,7 +292,7 @@
 /mule-standalone-${productVersion}/examples/loanbroker-simple/src/main/java/org/mule/example/loanbroker/model/Customer.java
 /mule-standalone-${productVersion}/examples/loanbroker-simple/src/main/java/org/mule/example/loanbroker/model/LoanQuote.java
 /mule-standalone-${productVersion}/examples/loanbroker-simple/src/main/resources
-/mule-standalone-${productVersion}/examples/loanbroker-simple/src/main/resources/log4j.properties
+/mule-standalone-${productVersion}/examples/loanbroker-simple/src/main/resources/log4j2.xml
 /mule-standalone-${productVersion}/examples/loanbroker-simple/src/main/resources/loanbroker-simple.properties
 /mule-standalone-${productVersion}/examples/loanbroker-simple/src/test
 /mule-standalone-${productVersion}/examples/loanbroker-simple/src/test/java
@@ -302,7 +302,7 @@
 /mule-standalone-${productVersion}/examples/loanbroker-simple/src/test/java/org/mule/example/loanbroker
 /mule-standalone-${productVersion}/examples/loanbroker-simple/src/test/java/org/mule/example/loanbroker/LoanBrokerSyncTestCase.java
 /mule-standalone-${productVersion}/examples/loanbroker-simple/src/test/resources
-/mule-standalone-${productVersion}/examples/loanbroker-simple/src/test/resources/log4j.properties
+/mule-standalone-${productVersion}/examples/loanbroker-simple/src/test/resources/log4j2-test.xml
 
 #
 # /examples/scripting
@@ -385,7 +385,7 @@
 /mule-standalone-${productVersion}/examples/stockquote/src/test/java/org/mule/example/stockquote
 /mule-standalone-${productVersion}/examples/stockquote/src/test/java/org/mule/example/stockquote/StockQuoteFunctionalTestCase.java
 /mule-standalone-${productVersion}/examples/stockquote/src/test/resources
-/mule-standalone-${productVersion}/examples/stockquote/src/test/resources/log4j.properties
+/mule-standalone-${productVersion}/examples/stockquote/src/test/resources/log4j2-test.xml
 /mule-standalone-${productVersion}/examples/stockquote/src/test/resources/mule-test-exclusions.txt
 
 
@@ -404,14 +404,19 @@
 /mule-standalone-${productVersion}/lib/boot/libwrapper-solaris-sparc-64.so
 /mule-standalone-${productVersion}/lib/boot/libwrapper-solaris-x86-32.so
 /mule-standalone-${productVersion}/lib/boot/commons-cli-1.2.jar
-/mule-standalone-${productVersion}/lib/boot/log4j-1.2.16.jar
 /mule-standalone-${productVersion}/lib/boot/mule-module-boot-${productVersion}.jar
-/mule-standalone-${productVersion}/lib/boot/mule-module-logging-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/boot/mule-module-reboot-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/boot/README.txt
 /mule-standalone-${productVersion}/lib/boot/wrapper-3.2.3.jar
 /mule-standalone-${productVersion}/lib/boot/wrapper-windows-x86-32.dll
-
+/mule-standalone-${productVersion}/lib/boot/disruptor-3.2.1.jar
+/mule-standalone-${productVersion}/lib/boot/jcl-over-slf4j-1.7.7.jar
+/mule-standalone-${productVersion}/lib/boot/log4j-1.2-api-2.0.jar
+/mule-standalone-${productVersion}/lib/boot/log4j-api-2.0.jar
+/mule-standalone-${productVersion}/lib/boot/log4j-core-2.0.jar
+/mule-standalone-${productVersion}/lib/boot/log4j-jcl-2.0.jar
+/mule-standalone-${productVersion}/lib/boot/log4j-slf4j-impl-2.0.jar
+/mule-standalone-${productVersion}/lib/boot/slf4j-api-1.7.7.jar
 
 #
 # /lib/boot/exec
@@ -475,7 +480,7 @@
 /mule-standalone-${productVersion}/lib/mule/mule-module-tomcat-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-module-ws-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-module-xml-${productVersion}.jar
-/mule-standalone-${productVersion}/lib/mule/mule-mvel2-2.1.9-MULE-003.jar
+/mule-standalone-${productVersion}/lib/mule/mule-mvel2-2.1.9-MULE-004.jar
 /mule-standalone-${productVersion}/lib/mule/mule-pattern-core-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-tools-anttasks-${productVersion}.jar
 /mule-standalone-${productVersion}/lib/mule/mule-transport-ajax-${productVersion}.jar
@@ -519,8 +524,8 @@
 /mule-standalone-${productVersion}/lib/opt/asm-3.3.1.jar
 /mule-standalone-${productVersion}/lib/opt/asm-commons-3.1.jar
 /mule-standalone-${productVersion}/lib/opt/asm-tree-3.1.jar
-/mule-standalone-${productVersion}/lib/opt/aspectjrt-1.6.11.jar
-/mule-standalone-${productVersion}/lib/opt/aspectjweaver-1.6.11.jar
+/mule-standalone-${productVersion}/lib/opt/aspectjrt-1.7.3.jar
+/mule-standalone-${productVersion}/lib/opt/aspectjweaver-1.7.3.jar
 /mule-standalone-${productVersion}/lib/opt/axiom-api-1.2.5.jar
 /mule-standalone-${productVersion}/lib/opt/axiom-impl-1.2.5.jar
 /mule-standalone-${productVersion}/lib/opt/bcmail-jdk16-1.46.jar
@@ -536,7 +541,7 @@
 /mule-standalone-${productVersion}/lib/opt/commons-collections-3.2.1.jar
 /mule-standalone-${productVersion}/lib/opt/commons-dbutils-1.2.jar
 /mule-standalone-${productVersion}/lib/opt/commons-httpclient-3.1.jar
-/mule-standalone-${productVersion}/lib/opt/commons-io-1.4.jar
+/mule-standalone-${productVersion}/lib/opt/commons-io-2.4.jar
 /mule-standalone-${productVersion}/lib/opt/commons-jxpath-1.3.jar
 /mule-standalone-${productVersion}/lib/opt/commons-lang-2.4.jar
 /mule-standalone-${productVersion}/lib/opt/commons-net-2.0.jar
@@ -578,6 +583,7 @@
 /mule-standalone-${productVersion}/lib/opt/geronimo-jta_1.1_spec-1.1.1.jar
 /mule-standalone-${productVersion}/lib/opt/geronimo-servlet_3.0_spec-1.0.jar
 /mule-standalone-${productVersion}/lib/opt/geronimo-stax-api_1.0_spec-1.0.1.jar
+/mule-standalone-${productVersion}/lib/opt/grabbag-1.8.1.jar
 /mule-standalone-${productVersion}/lib/opt/groovy-all-1.8.6.jar
 /mule-standalone-${productVersion}/lib/opt/guava-16.0.1.jar
 /mule-standalone-${productVersion}/lib/opt/hamcrest-core-1.1.jar
@@ -591,7 +597,7 @@
 /mule-standalone-${productVersion}/lib/opt/jackson-databind-2.1.1.jar
 /mule-standalone-${productVersion}/lib/opt/jackson-jaxrs-1.9.11.jar
 /mule-standalone-${productVersion}/lib/opt/jackson-mapper-asl-1.9.11.jar
-/mule-standalone-${productVersion}/lib/opt/jackson-xc-1.7.1.jar
+/mule-standalone-${productVersion}/lib/opt/jackson-xc-1.9.11.jar
 /mule-standalone-${productVersion}/lib/opt/jasper-6.0.29.jar
 /mule-standalone-${productVersion}/lib/opt/jasper-el-6.0.29.jar
 /mule-standalone-${productVersion}/lib/opt/jasper-jdt-6.0.29.jar
@@ -613,19 +619,19 @@
 /mule-standalone-${productVersion}/lib/opt/jersey-core-1.6.jar
 /mule-standalone-${productVersion}/lib/opt/jersey-json-1.6.jar
 /mule-standalone-${productVersion}/lib/opt/jersey-server-1.6.jar
-/mule-standalone-${productVersion}/lib/opt/jetty-annotations-8.1.13.v20130916.jar
-/mule-standalone-${productVersion}/lib/opt/jetty-continuation-8.1.13.v20130916.jar
-/mule-standalone-${productVersion}/lib/opt/jetty-deploy-8.1.13.v20130916.jar
-/mule-standalone-${productVersion}/lib/opt/jetty-http-8.1.13.v20130916.jar
-/mule-standalone-${productVersion}/lib/opt/jetty-io-8.1.13.v20130916.jar
-/mule-standalone-${productVersion}/lib/opt/jetty-jndi-8.1.13.v20130916.jar
-/mule-standalone-${productVersion}/lib/opt/jetty-plus-8.1.13.v20130916.jar
-/mule-standalone-${productVersion}/lib/opt/jetty-security-8.1.13.v20130916.jar
-/mule-standalone-${productVersion}/lib/opt/jetty-server-8.1.13.v20130916.jar
-/mule-standalone-${productVersion}/lib/opt/jetty-servlet-8.1.13.v20130916.jar
-/mule-standalone-${productVersion}/lib/opt/jetty-util-8.1.13.v20130916.jar
-/mule-standalone-${productVersion}/lib/opt/jetty-webapp-8.1.13.v20130916.jar
-/mule-standalone-${productVersion}/lib/opt/jetty-xml-8.1.13.v20130916.jar
+/mule-standalone-${productVersion}/lib/opt/jetty-annotations-9.0.7.v20131107.jar
+/mule-standalone-${productVersion}/lib/opt/jetty-continuation-9.0.7.v20131107.jar
+/mule-standalone-${productVersion}/lib/opt/jetty-deploy-9.0.7.v20131107.jar
+/mule-standalone-${productVersion}/lib/opt/jetty-http-9.0.7.v20131107.jar
+/mule-standalone-${productVersion}/lib/opt/jetty-io-9.0.7.v20131107.jar
+/mule-standalone-${productVersion}/lib/opt/jetty-jndi-9.0.7.v20131107.jar
+/mule-standalone-${productVersion}/lib/opt/jetty-plus-9.0.7.v20131107.jar
+/mule-standalone-${productVersion}/lib/opt/jetty-security-9.0.7.v20131107.jar
+/mule-standalone-${productVersion}/lib/opt/jetty-server-9.0.7.v20131107.jar
+/mule-standalone-${productVersion}/lib/opt/jetty-servlet-9.0.7.v20131107.jar
+/mule-standalone-${productVersion}/lib/opt/jetty-util-9.0.7.v20131107.jar
+/mule-standalone-${productVersion}/lib/opt/jetty-webapp-9.0.7.v20131107.jar
+/mule-standalone-${productVersion}/lib/opt/jetty-xml-9.0.7.v20131107.jar
 /mule-standalone-${productVersion}/lib/opt/jetty-util-6.1.26.jar
 /mule-standalone-${productVersion}/lib/opt/jetty-util5-6.1.26.jar
 /mule-standalone-${productVersion}/lib/opt/jgrapht-jdk1.5-0.7.3.jar
@@ -638,7 +644,6 @@
 /mule-standalone-${productVersion}/lib/opt/jta-1.1.jar
 /mule-standalone-${productVersion}/lib/opt/juel-engine-2.1.0.jar
 /mule-standalone-${productVersion}/lib/opt/juel-impl-2.2.1.jar
-/mule-standalone-${productVersion}/lib/opt/jug-2.0.0-asl.jar
 /mule-standalone-${productVersion}/lib/opt/juli-6.0.29.jar
 /mule-standalone-${productVersion}/lib/opt/livetribe-jsr223-2.0.5.jar
 /mule-standalone-${productVersion}/lib/opt/mail-1.4.3.jar
@@ -690,6 +695,7 @@
 /mule-standalone-${productVersion}/lib/opt/sxc-xpath-0.7.3.jar
 /mule-standalone-${productVersion}/lib/opt/tomcat-apr-5.5.23.jar
 /mule-standalone-${productVersion}/lib/opt/tomcat-util-5.5.23.jar
+/mule-standalone-${productVersion}/lib/opt/uuid-3.4.0.jar
 /mule-standalone-${productVersion}/lib/opt/woodstox-core-asl-4.1.4.jar
 /mule-standalone-${productVersion}/lib/opt/wsdl4j-1.6.2.jar
 /mule-standalone-${productVersion}/lib/opt/wss4j-1.6.9.jar

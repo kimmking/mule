@@ -51,9 +51,12 @@ public class OutboundEndpointFactoryBean extends AbstractEndpointFactoryBean
         return outboundEndpoint;
     }
 
+
+
     @Override
     public void setRedeliveryPolicy(AbstractRedeliveryPolicy redeliveryPolicy)
     {
         throw new IllegalStateException("A redelivery policy cannot be specified for an outbound endpoint.");
     }
+
 }

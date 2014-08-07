@@ -6,11 +6,16 @@
  */
 package org.mule.processor;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -46,7 +51,6 @@ import javax.resource.spi.work.Work;
 import javax.resource.spi.work.WorkEvent;
 import javax.resource.spi.work.WorkException;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.invocation.InvocationOnMock;
@@ -225,6 +229,33 @@ public class SedaStageInterceptingMessageProcessorTestCase extends AsyncIntercep
 
         sedaStageInterceptingMessageProcessor.process(event);
     }
+
+
+    @Test
+    public void testProcessAsyncDoCopyEvent() throws Exception
+    {
+        SedaStageInterceptingMessageProcessor sedaStageInterceptingMessageProcessor =
+                new SedaStageInterceptingMessageProcessor(
+                  "testProcessAsyncDoCopyEvent", "testProcessAsyncDoCopyEvent", queueProfile,
+                  queueTimeout, mock(ThreadingProfile.class), queueStatistics, muleContext);
+
+        sedaStageInterceptingMessageProcessor.setListener(mock(MessageProcessor.class));
+        sedaStageInterceptingMessageProcessor.initialise();
+
+        MessagingExceptionHandler exceptionHandler = mock(MessagingExceptionHandler.class);
+        Flow flow = mock(Flow.class);
+        when(flow.getExceptionListener()).thenReturn(exceptionHandler);
+        when(flow.getProcessingStrategy()).thenReturn(new AsynchronousProcessingStrategy());
+        final MuleEvent event = getTestEvent(TEST_MESSAGE, flow, MessageExchangePattern.ONE_WAY);
+
+        sedaStageInterceptingMessageProcessor.processNextAsync(event);
+        MuleEvent queuedEvent = sedaStageInterceptingMessageProcessor.dequeue();
+
+        assertThat(queuedEvent, is(not(nullValue())));
+        assertThat(queuedEvent, is(not(same(event))));
+    }
+
+
 
     @Override
     protected AsyncInterceptingMessageProcessor createAsyncInterceptingMessageProcessor(MessageProcessor listener)

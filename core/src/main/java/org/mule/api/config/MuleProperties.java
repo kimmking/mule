@@ -61,6 +61,7 @@ public class MuleProperties
     public static final String MULE_CORRELATION_SEQUENCE_PROPERTY = PROPERTY_PREFIX + "CORRELATION_SEQUENCE";
     public static final String MULE_REMOTE_SYNC_PROPERTY = PROPERTY_PREFIX + "REMOTE_SYNC";
     public static final String MULE_REMOTE_CLIENT_ADDRESS = PROPERTY_PREFIX + "REMOTE_CLIENT_ADDRESS";
+    public static final String MULE_PROXY_ADDRESS = PROPERTY_PREFIX + "PROXY_ADDRESS";
     public static final String MULE_SOAP_METHOD = PROPERTY_PREFIX + "SOAP_METHOD";
     public static final String MULE_JMS_SESSION = PROPERTY_PREFIX + "JMS_SESSION";
     public static final String MULE_MANAGEMENT_CONTEXT_PROPERTY = PROPERTY_PREFIX + "MANAGEMENT_CONTEXT";
@@ -68,6 +69,17 @@ public class MuleProperties
     public static final String MULE_DISABLE_TRANSPORT_TRANSFORMER_PROPERTY = PROPERTY_PREFIX + "DISABLE_TRANSPORT_TRANSFORMER";
     public static final String MULE_FORCE_SYNC_PROPERTY = PROPERTY_PREFIX + "FORCE_SYNC";
     // End MuleEvent Level properties
+
+    /**
+     * *****************************************************************************
+     * Logging properties
+     * *****************************************************************************
+     */
+
+    public static final String LOG_CONTEXT_SELECTOR_PROPERTY = "Log4jContextSelector";
+    public static final String DEFAULT_LOG_CONTEXT_SELECTOR = "org.mule.module.launcher.log4j.ArtifactAwareContextSelector";
+    public static final String LOG_CONFIGURATION_FACTORY_PROPERTY = "log4j.configurationFactory";
+    public static final String DEFAULT_LOG_CONFIGURATION_FACTORY = "org.mule.module.launcher.log4j.MuleLoggerConfigurationFactory";
 
     /**
      * *****************************************************************************
@@ -135,6 +147,7 @@ public class MuleProperties
     public static final String OBJECT_STORE_FILE_NAME = "_fileQueueStore";
     public static final String OBJECT_MULE_APPLICATION_PROPERTIES = "_muleProperties";
     public static final String OBJECT_MULE_ENDPOINT_FACTORY = "_muleEndpointFactory";
+    public static final String OBJECT_MULE_OUTBOUND_ENDPOINT_EXECUTOR_FACTORY = "_muleOutboundEndpointExecutorFactory";
     public static final String OBJECT_MULE_STREAM_CLOSER_SERVICE = "_muleStreamCloserService";
     public static final String OBJECT_MULE_SIMPLE_REGISTRY_BOOTSTRAP = "_muleSimpleRegistryBootstrap";
     public static final String OBJECT_DEFAULT_THREADING_PROFILE = "_defaultThreadingProfile";
@@ -177,6 +190,8 @@ public class MuleProperties
     public static final String MULE_ENCODING_SYSTEM_PROPERTY = SYSTEM_PROPERTY_PREFIX + "encoding";
     public static final String MULE_SECURITY_SYSTEM_PROPERTY = SYSTEM_PROPERTY_PREFIX + "security.model";
     public static final String MULE_SECURITY_PROVIDER_PROPERTY = SYSTEM_PROPERTY_PREFIX + "security.provider";
+    public static final String MULE_STREAMING_BUFFER_SIZE = SYSTEM_PROPERTY_PREFIX + "streaming.bufferSize";
+    public static final String MULE_SIMPLE_LOG = SYSTEM_PROPERTY_PREFIX + "simpleLog";
 
     public static final String CONTENT_TYPE_PROPERTY = "Content-Type";
 }

@@ -10,7 +10,7 @@
     <description>The Loan Broker example application is based on the example presented in the Enterprise Integration Patterns book. This chapter of the book is available online so you can see a detailed description of the application here (http://www.eaipatterns.com/ComposedMessagingWS.html).</description>
 
     <properties>
-        <muleVersion>3.5.0-M5-SNAPSHOT</muleVersion>
+        <muleVersion>3.6.0-M2-SNAPSHOT</muleVersion>
         <activemqVersion>4.1.2</activemqVersion>
         <licensePath>../../../LICENSE_HEADER.txt</licensePath>
     </properties>
@@ -57,38 +57,11 @@
 
     <repositories>
         <repository>
-            <id>mule-releases</id>
-            <name>Mule Dependencies</name>
-            <url>https://repository.mulesoft.org/nexus/content/repositories/releases/</url>
+            <id>mule</id>
+            <name>Mule Repository</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
         </repository>
-        <repository>
-            <id>mule-snapshots</id>
-            <name>Mule snapshots</name>
-            <url>https://repository.mulesoft.org/nexus/content/repositories/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-        <!--
-            This is actually from cxf's pom an shouldn't be necessary here.
-        -->
     </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>apache-plugin-snapshots</id>
-            <name>Apache Maven Plugins Snapshot Repository</name>
-            <url>http://people.apache.org/maven-snapshot-repository</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </pluginRepository>
-    </pluginRepositories>
 
     <build>
         <defaultGoal>install</defaultGoal>
